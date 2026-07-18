@@ -1,0 +1,123 @@
+[
+  {
+    "name": "LR=0.0005",
+    "lr": 0.0005,
+    "batch_size": 16,
+    "val_acc": 0.99,
+    "best_val_acc": 0.9900000095367432,
+    "best_train_acc": 0.9449999928474426,
+    "epochs": 70,
+    "time": 14.856557607650757,
+    "params": 421642
+  },
+  {
+    "name": "LR=0.0010",
+    "lr": 0.001,
+    "batch_size": 16,
+    "val_acc": 0.99,
+    "best_val_acc": 0.9900000095367432,
+    "best_train_acc": 0.9275000095367432,
+    "epochs": 46,
+    "time": 10.010000467300415,
+    "params": 421642
+  },
+  {
+    "name": "LR=0.0020",
+    "lr": 0.002,
+    "batch_size": 16,
+    "val_acc": 1.0,
+    "best_val_acc": 1.0,
+    "best_train_acc": 0.9624999761581421,
+    "epochs": 53,
+    "time": 12.508067607879639,
+    "params": 421642
+  },
+  {
+    "name": "LR=0.0030",
+    "lr": 0.003,
+    "batch_size": 16,
+    "val_acc": 1.0,
+    "best_val_acc": 1.0,
+    "best_train_acc": 0.9574999809265137,
+    "epochs": 55,
+    "time": 16.892817974090576,
+    "params": 421642
+  },
+  {
+    "name": "BS=8",
+    "lr": 0.002,
+    "batch_size": 8,
+    "val_acc": 1.0,
+    "best_val_acc": 1.0,
+    "best_train_acc": 0.9549999833106995,
+    "epochs": 47,
+    "time": 18.30557656288147,
+    "params": 421642
+  },
+  {
+    "name": "BS=32",
+    "lr": 0.002,
+    "batch_size": 32,
+    "val_acc": 0.99,
+    "best_val_acc": 0.9900000095367432,
+    "best_train_acc": 0.9424999952316284,
+    "epochs": 50,
+    "time": 14.833121299743652,
+    "params": 421642
+  },
+  {
+    "name": "BS=64",
+    "lr": 0.002,
+    "batch_size": 64,
+    "val_acc": 1.0,
+    "best_val_acc": 1.0,
+    "best_train_acc": 0.9350000023841858,
+    "epochs": 63,
+    "time": 10.344993352890015,
+    "params": 421642
+  },
+  {
+    "name": "Deeper+BN",
+    "lr": 0.002,
+    "batch_size": 16,
+    "val_acc": 1.0,
+    "best_val_acc": 1.0,
+    "best_train_acc": 0.987500011920929,
+    "epochs": 51,
+    "time": 20.88301658630371,
+    "params": 289066
+  },
+  {
+    "name": "Medium+BN",
+    "lr": 0.002,
+    "batch_size": 16,
+    "val_acc": 1.0,
+    "best_val_acc": 1.0,
+    "best_train_acc": 0.9225000143051147,
+    "epochs": 47,
+    "time": 12.629413604736328,
+    "params": 422314
+  },
+  {
+    "name": "StrongReg",
+    "lr": 0.002,
+    "batch_size": 16,
+    "val_acc": 1.0,
+    "best_val_acc": 1.0,
+    "best_train_acc": 0.9049999713897705,
+    "epochs": 55,
+    "time": 12.171921253204346,
+    "params": 421642
+  },
+  {
+    "name": "Wider",
+    "lr": 0.002,
+    "batch_size": 16,
+    "val_acc": 1.0,
+    "best_val_acc": 1.0,
+    "best_train_acc": 0.9800000190734863,
+    "epochs": 60,
+    "time": 18.046483516693115,
+    "params": 947338
+  }
+]

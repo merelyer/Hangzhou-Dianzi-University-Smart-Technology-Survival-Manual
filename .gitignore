@@ -1,0 +1,48 @@
+# Large course binaries
+*.zip
+*.rar
+*.7z
+*.pt
+*.pth
+*.onnx
+*.keras
+*.h5
+*.pkl
+
+# Courseware and scanned materials kept outside Git
+*.pdf
+*.ppt
+*.pptx
+*.doc
+*.docx
+
+# Dataset/media-heavy files
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.bmp
+*.tif
+*.tiff
+*.mp4
+*.avi
+*.mov
+*.wav
+*.mp3
+*.xml
+
+# Build/runtime noise
+dist/
+build/
+cache/
+__pycache__/
+*.pyc
+*.pyd
+*.dll
+*.exe
+
+# Local/editor files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

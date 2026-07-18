@@ -1,0 +1,3 @@
+task,seen_classes,train_samples_this_task,test_samples_seen_classes,top1_accuracy
+1,10,800,400,48.75
+2,20,800,800,42.25

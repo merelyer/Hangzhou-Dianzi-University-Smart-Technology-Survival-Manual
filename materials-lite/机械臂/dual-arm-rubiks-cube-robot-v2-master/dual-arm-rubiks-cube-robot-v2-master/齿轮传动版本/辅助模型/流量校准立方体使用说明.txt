@@ -1,0 +1,15 @@
+用于流量校准，适用于使用klipper开源方案的3D打印机：
+和官方文档里的模型不一样，我改过，减少无用细节，优化打印速度。
+
+在打印G-Code前输入下面的命令
+SET_VELOCITY_LIMIT SQUARE_CORNER_VELOCITY=1 ACCEL=500
+上述命令将使喷嘴在打印转角时减速，从而显著增加转角时挤出的压力。接着，如果您使用的是近程挤出结构，请输入下面的命令：
+TUNING_TOWER COMMAND=SET_PRESSURE_ADVANCE PARAMETER=ADVANCE START=0 FACTOR=.005
+使用远程挤出的话，则输入：
+TUNING_TOWER COMMAND=SET_PRESSURE_ADVANCE PARAMETER=ADVANCE START=0 FACTOR=.020
+
+切片打印，按照最终想使用的参数（温度、打印速度、层高等）来就行。
+不用打完，边角开始出现缺损就可以停止了。
+
+观察打印件，然后用游标卡尺量度转角质量最佳的层对应的高度。如果不能确定哪里最佳，请优先选择较小的高度。
+压力提前的设定值可以通过pressure_advance = <start> + <measured_height> * <factor>进行计算，如测出的最优层高（measured_height）为8 mm，测试起始点（start）为0 mm，增量（factor）为0.005，则计算结果为（ 0 + 8 *.005=0.04）

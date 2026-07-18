@@ -1,0 +1,12 @@
+RanPAC core quick local experiment on synthetic class-incremental data
+seed: 1993
+tasks: 2, classes_per_task: 10
+train samples/class: 80
+test samples/class: 40
+feature dimension: 768
+random projection dimension M: 512
+ridge lambda: 1.0
+runtime_seconds: 5.70
+
+Task 1: seen 10 classes, Top-1 accuracy 48.75%
+Task 2: seen 20 classes, Top-1 accuracy 42.25%

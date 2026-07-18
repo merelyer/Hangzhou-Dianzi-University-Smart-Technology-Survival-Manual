@@ -1,0 +1,13 @@
+set pos_kp 1100
+set pos_kd 0
+set speed_kp 100000
+set speed_ki 7000
+set curr_kp 147120528
+set curr_ki 2903040
+set psi 0.00445
+set Ld 0.0041
+set Lq 0.006
+set Rs 2.0
+set rs485_id 4 (四个分别设置为1、2、3、4)
+
+电流环带宽1400Hz
