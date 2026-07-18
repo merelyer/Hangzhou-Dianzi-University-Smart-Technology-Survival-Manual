@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>配置文件编辑器</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            margin: 0;
+            padding: 15px;
+            box-sizing: border-box;
+        }
+        .header {
+            margin-bottom: 15px;
+        }
+        #editor {
+            width: 100%;
+            flex: 1;
+            font-family: monospace;
+            resize: none;
+        }
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        配置文件编辑器：
+        <select id="fileSelector">
+            <option value="motion.cfg">motion.cfg</option>
+            <option value="main.cfg">main.cfg</option>
+            <option value="testcase.txt">testcase.txt</option>
+            <option value="index.html">index.html</option>
+        </select>
+        <button onclick="loadFile()">打开</button>
+        <button id="saveButton" onclick="saveFile()" disabled>保存</button>
+        <button onclick="downloadFile()">下载</button>
+    </div>
+    <textarea id="editor"></textarea>
+    
+    <script>
+        // DOM 元素引用
+        const editor = document.getElementById('editor');
+        const fileSelector = document.getElementById('fileSelector');
+        const saveButton = document.getElementById('saveButton');
+        
+        // 页面加载时自动打开默认文件
+        document.addEventListener('DOMContentLoaded', function() {
+            loadFile();
+        });
+        
+        // 监听编辑器内容变化
+        editor.addEventListener('input', function() {
+            updateSaveButtonState();
+        });
+        
+        // 监听文件选择器变化
+        fileSelector.addEventListener('change', function() {
+            loadFile();
+        });
+        
+        // 更新保存按钮状态
+        function updateSaveButtonState() {
+            const content = editor.value.trim();
+            saveButton.disabled = content === '';
+        }
+        
+        async function loadFile() {
+            const file = fileSelector.value;
+            try {
+                const response = await fetch(`/cfg/get?file=${file}`);
+                if (response.ok) {
+                    const text = await response.text();
+                    editor.value = text;
+                } else {
+                    editor.value = '';
+                    console.error('加载文件失败:', response.status);
+                }
+            } catch (error) {
+                editor.value = '';
+                console.error('加载文件出错:', error);
+            }
+            // 加载后更新保存按钮状态
+            updateSaveButtonState();
+        }
+        
+        async function saveFile() {
+            const file = fileSelector.value;
+            const content = editor.value;
+            
+            // 防止保存空内容
+            if (content.trim() === '') {
+                alert('无法保存空文件！');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`/cfg/save?file=${file}`, {
+                    method: 'POST',
+                    body: content
+                });
+                
+                if (response.ok) {
+                    alert('保存成功！');
+                } else {
+                    alert('保存失败！');
+                }
+            } catch (error) {
+                console.error('保存文件出错:', error);
+                alert('保存文件出错！');
+            }
+        }
+        
+        function downloadFile() {
+            const file = fileSelector.value;
+            window.location.href = `/cfg/download?file=${file}`;
+        }
+        
+        // 初始化保存按钮状态
+        updateSaveButtonState();
+    </script>
+</body>
+</html>

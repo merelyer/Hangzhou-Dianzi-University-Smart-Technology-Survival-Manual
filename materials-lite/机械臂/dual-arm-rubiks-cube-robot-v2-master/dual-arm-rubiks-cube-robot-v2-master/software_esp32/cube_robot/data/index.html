@@ -1,0 +1,1114 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <title>魔方机器人调试界面</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <link rel="icon" href="data:,">
+    <style>
+        :root {
+            --primary: #5c6bc0;
+            --primary-dark: #3f51b5;
+            --secondary: #78909c;
+            --accent: #90a4ae;
+            --dark: #37474f;
+            --light: #f5f7fa;
+            --success: #66bb6a;
+            --card-bg: rgba(255, 255, 255, 0.92);
+            --border: #cfd8dc;
+            --mobile-font-size: 14px;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
+        }
+        
+        html {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #263238, #37474f);
+            color: var(--light);
+            line-height: 1.5;
+            min-height: 100vh;
+            -webkit-text-size-adjust: 100%;
+            text-size-adjust: 100%;
+        }
+        
+        body {
+            padding: 15px;
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            overflow: auto;
+            min-height: 100vh;
+            font-size: var(--mobile-font-size);
+        }
+        
+        .content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            flex: 1;
+            overflow: visible;
+        }
+        
+        @media (max-width: 900px) {
+            .content {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+            .content {
+                gap: 12px;
+            }
+        }
+        
+        .card {
+            background: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 
+                0 8px 16px rgba(0, 0, 0, 0.1),
+                inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 18px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .card-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 1.2rem;
+            color: var(--dark);
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .status-container {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 12px;
+            background: rgba(245, 247, 250, 0.7);
+            border: 1px solid rgba(207, 216, 220, 0.5);
+            padding: 12px;
+            border-radius: 12px;
+        }
+        
+        .status-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .status-label {
+            font-weight: 600;
+            min-width: 80px;
+            color: var(--dark);
+            font-size: 0.9rem;
+        }
+        
+        .status-value {
+            position: relative;
+            flex: 1;
+            font-weight: 600;
+            background: rgba(15, 23, 42, 0.05);
+            padding: 6px 10px;
+            border-radius: 6px;
+            color: var(--dark);
+            overflow-x: auto;
+            white-space: nowrap;
+            font-size: 0.9rem;
+        }
+        
+        .button-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
+            margin-bottom: 0px;
+        }
+        
+        .btn, .toggle-btn {
+            padding: 8px 8px;
+            border: none;
+            border-radius: 10px;
+            background: linear-gradient(to bottom, #e0e0e0, #b0bec5);
+            color: var(--dark);
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            min-height: auto;
+            text-align: center;
+            font-size: 0.85rem;
+            border: 1px solid rgba(144, 164, 174, 0.3);
+        }
+
+        .btn:hover, .toggle-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+            background: linear-gradient(to bottom, #a0aec0, #718096);
+        }
+
+        .toggle-btn.active, .btn.active {
+            background: linear-gradient(to bottom, #48bb78, #38a169);
+        }
+        
+        .control-group {
+            background: rgba(236, 239, 241, 0.7);
+            border: 1px solid rgba(207, 216, 220, 0.5);
+            border-radius: 12px;
+            padding: 0px;
+            margin-bottom: 0px;
+        }
+        
+        .control-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+            color: var(--dark);
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+        
+        .control-row {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 10px;
+            color: #000;
+        }
+        
+        .slider-container {
+            flex: 1;
+            min-width: 160px;
+        }
+        
+        .slider {
+            width: 100%;
+            height: 10px;
+            -webkit-appearance: none;
+            appearance: none;
+            background: linear-gradient(to right, #b0bec5, #78909c); 
+            border-radius: 10px;
+            outline: none;
+        }
+        
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: white;
+            border: 3px solid var(--primary);
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+        
+        .value-display {
+            background: var(--primary);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1rem;
+        }
+        
+        .text-input {
+            flex: 1;
+            padding: 10px 12px;
+            border-radius: 10px;
+            border: 2px solid var(--border);
+            background: white;
+            font-size: 0.9rem;
+            min-width: 0;
+        }
+        
+        .video-container {
+            position: relative;
+            width: 100%;
+            background: black;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 12px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .video-wrapper {
+            position: relative;
+            width: 100%;
+            height: 0;
+            padding-bottom: 75%; /* 4:3 aspect ratio */
+        }
+        
+        #videoStream {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        
+        #overlayCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: auto;
+            z-index: 2;
+            touch-action: none;
+        }
+        
+        .cube-layout-container {
+            flex: 1;
+            position: relative;
+            padding-bottom: 75%;
+            overflow: hidden;
+            padding: 0;
+            border-radius: 0;
+            background: none;
+            aspect-ratio: 4/3; 
+        }
+        
+        .cube-layout {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            min-width: 0;
+            min-height: 0;
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            grid-template-rows: repeat(9, 1fr);
+            gap: 2px;
+            background: rgba(236, 239, 241, 0.7);
+            border: 1px solid rgba(207, 216, 220, 0.5);
+            border-radius: 8px;
+            padding: 8px;
+            box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.5);
+        }
+        
+        .cube-cell {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 0.6rem;
+            font-weight: bold;
+            position: relative;
+            border-radius: 4px;
+            box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.3);
+        }
+        
+        .cube-cell.hidden {
+            visibility: hidden;
+        }
+        
+        .cube-cell .index {
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            font-size: 0.5rem;
+            color: rgba(255, 255, 255, 0.7);
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 3px;
+            padding: 1px 3px;
+        }
+        
+        .icon {
+            font-size: 1.1em;
+        }
+        
+        .compact-row {
+            display: flex;
+            flex-wrap: nowrap;
+            gap: 8px;
+            align-items: center;
+            margin: 8px 0;
+        }
+        
+        .compact-row .text-input {
+            flex: 1;
+            min-width: 200px;
+            max-width: calc(100% - 120px);
+        }
+
+        .compact-row .btn {
+            flex-shrink: 0;
+            width: auto;
+            min-width: 100px;
+            white-space: nowrap;
+        }
+        
+        .slider-group {
+            display: flex;
+            flex-wrap: nowrap;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+        }
+        
+        .slider-group .slider-container {
+            flex: 1;
+            min-width: 100px;
+        }
+        
+        .slider-group .value-display {
+            flex-shrink: 0;
+        }
+        
+        @media (max-width: 600px) {
+            .button-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        #customContextMenu {
+            position: absolute;
+            background-color: white;
+            border: 1px solid #ccc;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            z-index: 1000;
+            border-radius: 5px;
+            overflow: hidden;
+            color: black; 
+        }
+
+        .menu-item {
+            padding: 8px 15px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .menu-item:hover {
+            background-color: #f0f0f0;
+        }
+
+        .progress-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 6px;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(to right, #4caf50, #8bc34a);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .status-text {
+            position: relative;
+            z-index: 2;
+            padding: 0 4px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="content">
+        <!-- 左侧：调试功能 -->
+        <div class="card">
+            <h2 class="card-title">
+                <span class="icon">⚙️</span> 调试功能
+            </h2>
+            
+            <div class="status-container">
+                <div class="status-row">
+                    <div class="status-label">系统状态：</div>
+                    <div class="status-value" id="statusDisplay">
+                        <span class="status-text">连接已断开</span>
+                        <div class="progress-container">
+                            <div class="progress-bar"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="status-row">
+                    <div class="status-label">电机角度：</div>
+                    <div class="status-value" id="angleDisplay">连接已断开</div>
+                </div>
+            </div>
+            
+            <div class="button-grid">
+                <button id="enableMotors" class="btn">
+                    <span class="icon">🔌</span>
+                    <span>使能电机</span>
+                </button>
+                <button id="disableMotors" class="btn">
+                    <span class="icon">⛔</span>
+                    <span>禁用电机</span>
+                </button>
+                <button id="goHome" class="btn">
+                    <span class="icon">🏠</span>
+                    <span>回零点</span>
+                </button>
+                <button id="releaseCube" class="btn">
+                    <span class="icon">🔄</span>
+                    <span>松开魔方</span>
+                </button>
+                <button id="clampCube" class="btn">
+                    <span class="icon">🔒</span>
+                    <span>夹紧魔方</span>
+                </button>
+                <a href="config.html" target="_blank" class="btn">
+                    <span class="icon">📝</span>
+                    <span>配置文件</span>
+                </a>
+            </div>
+            
+            <div class="control-group">
+                <div class="compact-row">
+                    <input type="text" id="motionSequence" class="text-input" 
+                           value="L*T R*T L-T L+T R-T R+T L1 R*F L0 R1 L*F R0 L1 R+F L0 L1 R-F L0 R1 L+F R0 R1 L-F R0 L2 L+N L0 R2 R+N L+F R0 L2 L+N R+F L0 R2 R+N L-F R0 L2 L+N R-F L0 L2 L+N R*F L0 R2 R+N R0 R2 R+N L*F R0">
+                    <button id="testMotion" class="btn">
+                        <span>🔄</span> 测试动作
+                    </button>
+                </div>
+            </div>
+            
+            <div class="control-group" style="flex: 1; display: flex; flex-direction: column;">
+                <div class="cube-layout-container">
+                    <div id="cubeLayout" class="cube-layout"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 右侧：视频流控制 -->
+        <div class="card">
+            <h2 class="card-title">
+                <span class="icon">📷</span> 实时视频流
+            </h2>
+            
+            <div class="control-group">
+                <div class="control-row">
+                    <div class="slider-group">
+                        <span>补光灯亮度：</span>
+                        <div class="slider-container">
+                            <input type="range" min="0" max="100" value="25" class="slider" id="brightnessSlider">
+                        </div>
+                        <div class="value-display" id="brightnessValue">25</div> 
+                        <button id="save" class="btn">
+                            <span class="icon">💾</span>
+                            <span>保存坐标</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="video-container">
+                <div class="video-wrapper">
+                    <img id="videoStream" src="" alt="实时视频流加载中...">
+                    <canvas id="overlayCanvas"></canvas>
+                </div>
+            </div>
+            
+            <div class="control-group">
+                <div class="control-header">
+                    <span>🎯</span> 坐标标定
+                </div>
+                <p style="color: var(--dark); margin-bottom: 8px; font-size: 0.85rem;">
+                    拖动绿色标记点调整位置，调整后点击"保存坐标"。
+                </p>
+            </div>
+            <div class="control-group">
+                <div class="control-header">
+                    <span>🪄</span> 魔方打乱/还原
+                </div>
+                <p style="color: var(--dark); margin-bottom: 8px; font-size: 0.85rem;">
+                    1、当main.cfg中的AUTO_CUBE_DETECT = 2时，可以自动识别魔方的放置并开始还原。<br>
+                    2、当AUTO_CUBE_DETECT = 0时，可以通过下面的按钮，或者主控板上的BOOT按键手动开始还原。<br>
+                    3、可指定打乱公式(例如F2 D' R B2 U R2 ...)，如果留空，每次随机打乱。
+                    <p style="color: var(--dark); margin-bottom: 8px; font-size: 0.85rem;">
+                        <div class="compact-row">
+                            <input type="text" id="scrambleSequence" class="text-input" 
+                                value="F2 D' R B2 U R2 D L2 U2 B2 L2 U R2 U2 B' F2 L' U F' R' B'">
+                            <button id="scramble" class="btn">
+                                <span>🔄</span> 提交
+                            </button>
+                        </div>
+                    </p>
+                    <button id="restore" class="btn" style="font-size: 1.5rem;">
+                        <span class="icon">🪄</span>
+                        <span>还原、打乱魔方</span>
+                    </button>
+                </p>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        var colorCodeArray = Array(54).fill('');
+        var colorData = Array(54).fill().map(() => {
+            return `rgb(128, 128, 128)`;
+        });
+        var hsvData = Array(54).fill().map(() => ({h:0, s:0, v:0}));
+        
+        const videoWidth = 320;
+        const videoHeight = 240;
+        const defaultPoints = [
+            {x: 80, y: 60},  // 点1
+            {x: 160, y: 20}, // 点2
+            {x: 280, y: 60}, // 点3
+            {x: 80, y: 180}, // 点4
+            {x: 160, y: 220}, // 点5
+            {x: 270, y: 200}  // 点6
+        ];
+        const layoutMapping = [
+            [-1, -1, -1,  0,  1,  2, -1, -1, -1, -1, -1, -1],
+            [-1, -1, -1,  3,  4,  5, -1, -1, -1, -1, -1, -1],
+            [-1, -1, -1,  6,  7,  8, -1, -1, -1, -1, -1, -1],
+            [36, 37, 38, 18, 19, 20,  9, 10, 11, 45, 46, 47],
+            [39, 40, 41, 21, 22, 23, 12, 13, 14, 48, 49, 50],
+            [42, 43, 44, 24, 25, 26, 15, 16, 17, 51, 52, 53],
+            [-1, -1, -1, 27, 28, 29, -1, -1, -1, -1, -1, -1],
+            [-1, -1, -1, 30, 31, 32, -1, -1, -1, -1, -1, -1],
+            [-1, -1, -1, 33, 34, 35, -1, -1, -1, -1, -1, -1]
+        ];
+        
+        var gateway = `ws://${window.location.hostname}/ws`;
+        var websocket;
+        var isConnected = false;
+        var videoStream = document.getElementById('videoStream');
+        var streamUrl = `http://${window.location.hostname}:81/stream`;
+        var points = JSON.parse(JSON.stringify(defaultPoints));
+        var overlayCanvas = document.getElementById('overlayCanvas');
+        var ctx = overlayCanvas.getContext('2d');
+        var isDragging = false;
+        var dragIndex = -1;
+        var scaleX = 1;
+        var scaleY = 1;
+        var colorTimer;
+        var isTouchDevice = 'ontouchstart' in document.documentElement;
+        
+        window.addEventListener('load', onLoad);
+        window.addEventListener('resize', resizeCanvas);
+        
+        function initWebSocket() {
+            console.log('尝试建立WebSocket连接...');
+            try {
+                websocket = new WebSocket(gateway);
+                websocket.onopen = onOpen;
+                websocket.onclose = onClose;
+                websocket.onmessage = onMessage;
+                websocket.onerror = onError;
+            } catch (e) {
+                console.error('WebSocket连接失败:', e);
+                setTimeout(initWebSocket, 5000);
+            }
+        }
+        
+        function resizeCanvas() {
+            const wrapper = document.querySelector('.video-wrapper');
+            const containerWidth = wrapper.clientWidth;
+            const containerHeight = wrapper.clientHeight;
+            
+            // 计算缩放比例，保持原始宽高比
+            scaleX = containerWidth / videoWidth;
+            scaleY = containerHeight / videoHeight;
+            
+            // 应用缩放比例到Canvas
+            overlayCanvas.width = containerWidth;
+            overlayCanvas.height = containerHeight;
+            
+            drawOverlay();
+        }
+        
+        function drawOverlay() {
+            const wrapper = document.querySelector('.video-wrapper');
+            const containerWidth = wrapper.clientWidth;
+            const containerHeight = wrapper.clientHeight;
+            
+            ctx.clearRect(0, 0, containerWidth, containerHeight);
+            
+            ctx.strokeStyle = '#ff00aa';
+            ctx.lineWidth = 2;
+            ctx.setLineDash([5, 3]);
+            
+            drawLine(0, 1);
+            drawLine(1, 2);
+            drawLine(3, 4);
+            drawLine(4, 5);
+            drawLine(0, 3);
+            drawLine(1, 4);
+            drawLine(2, 5);
+            
+            ctx.setLineDash([]);
+            
+            for (let i = 0; i < points.length; i++) {
+                const x = points[i].x * scaleX;
+                const y = points[i].y * scaleY;
+                
+                ctx.beginPath();
+                ctx.arc(x, y, 10, 0, Math.PI * 2);
+                ctx.fillStyle = i === dragIndex ? '#ffff00' : '#00ff00';
+                ctx.fill();
+                ctx.strokeStyle = '#000000';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                
+                ctx.fillStyle = '#000000';
+                ctx.font = 'bold 14px Arial';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText((i + 1).toString(), x, y);
+            }
+        }
+        
+        function drawLine(i, j) {
+            ctx.beginPath();
+            ctx.moveTo(points[i].x * scaleX, points[i].y * scaleY);
+            ctx.lineTo(points[j].x * scaleX, points[j].y * scaleY);
+            ctx.stroke();
+        }
+        
+        function sendCoordinates() {
+            if (isConnected && websocket) {
+                const coords = points.map(p => `(${Math.round(p.x)},${Math.round(p.y)})`).join(',');
+                websocket.send('update_pos:' + coords);
+            }
+        }
+        
+        function initEvents() {
+            // 添加鼠标事件
+            overlayCanvas.addEventListener('mousedown', handleMouseDown);
+            overlayCanvas.addEventListener('mousemove', handleMouseMove);
+            overlayCanvas.addEventListener('mouseup', handleMouseUp);
+            overlayCanvas.addEventListener('mouseleave', handleMouseUp);
+            
+            // 添加触摸事件
+            overlayCanvas.addEventListener('touchstart', handleTouchStart, {passive: false});
+            overlayCanvas.addEventListener('touchmove', handleTouchMove, {passive: false});
+            overlayCanvas.addEventListener('touchend', handleTouchEnd);
+            overlayCanvas.addEventListener('touchcancel', handleTouchEnd);
+        }
+        
+        function getEventPosition(e) {
+            const rect = overlayCanvas.getBoundingClientRect();
+            let clientX, clientY;
+            
+            if (e.type.includes('touch')) {
+                if (e.touches.length === 0) return {x: 0, y: 0};
+                clientX = e.touches[0].clientX;
+                clientY = e.touches[0].clientY;
+            } else {
+                clientX = e.clientX;
+                clientY = e.clientY;
+            }
+            
+            return {
+                x: (clientX - rect.left) / scaleX,
+                y: (clientY - rect.top) / scaleY
+            };
+        }
+        
+        function handleMouseDown(e) {
+            e.preventDefault();
+            const pos = getEventPosition(e);
+            startDrag(pos.x, pos.y);
+        }
+        
+        function handleMouseMove(e) {
+            if (!isDragging) return;
+            e.preventDefault();
+            const pos = getEventPosition(e);
+            drag(pos.x, pos.y);
+        }
+        
+        function handleMouseUp(e) {
+            endDrag();
+        }
+        
+        function handleTouchStart(e) {
+            if (e.touches.length > 1) return; // 忽略多指触摸
+            e.preventDefault();
+            const pos = getEventPosition(e);
+            startDrag(pos.x, pos.y);
+        }
+        
+        function handleTouchMove(e) {
+            if (!isDragging) return;
+            e.preventDefault();
+            const pos = getEventPosition(e);
+            drag(pos.x, pos.y);
+        }
+        
+        function handleTouchEnd(e) {
+            endDrag();
+        }
+        
+        function startDrag(x, y) {
+            for (let i = 0; i < points.length; i++) {
+                const dx = points[i].x - x;
+                const dy = points[i].y - y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                
+                if (distance < 20) {
+                    isDragging = true;
+                    dragIndex = i;
+                    overlayCanvas.style.cursor = 'grabbing';
+                    drawOverlay();
+                    break;
+                }
+            }
+        }
+        
+        function drag(x, y) {
+            if (!isDragging) return;
+            
+            points[dragIndex].x = Math.max(0, Math.min(videoWidth, x));
+            points[dragIndex].y = Math.max(0, Math.min(videoHeight, y));
+            
+            drawOverlay();
+        }
+        
+        function endDrag() {
+            if (isDragging) {
+                isDragging = false;
+                overlayCanvas.style.cursor = 'default';
+                sendCoordinates();
+            }
+        }
+        
+        function initCubeLayout() {
+            const container = document.getElementById('cubeLayout');
+            container.innerHTML = '';
+            
+            for (let row = 0; row < layoutMapping.length; row++) {
+                for (let col = 0; col < layoutMapping[row].length; col++) {
+                    const cellValue = layoutMapping[row][col];
+                    const cell = document.createElement('div');
+                    cell.className = 'cube-cell';
+                    
+                    if (cellValue === -1) {
+                        cell.classList.add('hidden');
+                    } else {
+                        cell.style.backgroundColor = colorData[cellValue];
+                        const indexSpan = document.createElement('span');
+                        indexSpan.className = 'index';
+                        indexSpan.textContent = `${cellValue}${colorCodeArray[cellValue] ? ':' + colorCodeArray[cellValue] : ''}`;
+                        cell.appendChild(indexSpan);
+                    }
+                    
+                    container.appendChild(cell);
+                }
+            }
+        }
+        
+        function hsvToRgb(h, s, v) {
+            const val = v / 255;
+            const sat = s / 255;
+            
+            let r, g, b;
+            const c = val * sat;
+            const hPrime = (h * 2) / 60;
+            const x = c * (1 - Math.abs((hPrime % 2) - 1));
+            
+            if (hPrime >= 0 && hPrime < 1) {
+                [r, g, b] = [c, x, 0];
+            } else if (hPrime >= 1 && hPrime < 2) {
+                [r, g, b] = [x, c, 0];
+            } else if (hPrime >= 2 && hPrime < 3) {
+                [r, g, b] = [0, c, x];
+            } else if (hPrime >= 3 && hPrime < 4) {
+                [r, g, b] = [0, x, c];
+            } else if (hPrime >= 4 && hPrime < 5) {
+                [r, g, b] = [x, 0, c];
+            } else {
+                [r, g, b] = [c, 0, x];
+            }
+            
+            const m = val - c;
+            r = Math.round((r + m) * 255);
+            g = Math.round((g + m) * 255);
+            b = Math.round((b + m) * 255);
+            
+            return `rgb(${r}, ${g}, ${b})`;
+        }
+        
+        function onOpen(event) {
+            console.log('连接已打开');
+            isConnected = true;
+
+            websocket.send('get_brightness');
+            websocket.send('get_pos');
+            websocket.send('get_scramble');
+            
+            document.getElementById('brightnessSlider').disabled = false;
+            videoStream.src = streamUrl;
+            startColorPolling();
+        }
+        
+        function startColorPolling() {
+            clearInterval(colorTimer);
+            
+            colorTimer = setInterval(function() {
+                if (isConnected) {
+                    websocket.send('get_colors');
+                }
+            }, 100);
+        }
+        
+        function onClose(event) {
+            console.log('连接已关闭');
+            isConnected = false;
+            
+            clearInterval(colorTimer);
+            document.getElementById('brightnessSlider').disabled = true;
+            document.getElementById('brightnessValue').innerHTML = '--';
+            
+            setTimeout(initWebSocket, 2000);
+        }
+        
+        function onError(event) {
+            console.error('WebSocket错误:', event);
+        }
+        
+        function onMessage(event) {            
+            if(event.data.startsWith('brightness:')) {
+                var brightness = event.data.split(':')[1];
+                document.getElementById('brightnessValue').innerHTML = brightness;
+                document.getElementById('brightnessSlider').value = brightness;
+            }
+            
+            if (event.data.startsWith('status:')) {
+                const data = event.data;
+                const statusStart = data.indexOf('status:') + 7;
+                const statusEnd = data.indexOf(';', statusStart);
+                const status = data.substring(statusStart, statusEnd);
+
+                // 更新状态文本
+                const statusText = document.querySelector('#statusDisplay .status-text');
+                statusText.textContent = status;
+                
+                // 解析进度百分比
+                let percentage = 0;
+                const percentMatch = status.match(/(\d+)%/);
+                if (percentMatch) {
+                    percentage = parseInt(percentMatch[1]);
+                }
+                
+                // 更新进度条
+                const progressBar = document.querySelector('#statusDisplay .progress-bar');
+                progressBar.style.width = percentage + '%';
+
+                const anglesStart = data.indexOf('angles:') + 7;
+                const anglesEnd = data.indexOf(';', anglesStart);
+                const angles = data.substring(anglesStart, anglesEnd);
+                document.getElementById('angleDisplay').textContent = angles;
+                
+                const colorsStart = data.indexOf('colors:') + 7;
+                const colorsPart = data.substring(colorsStart);
+                const colorCodes = colorsPart.substring(colorsPart.length - 54);
+                const hsvStr = colorsPart.substring(0, colorsPart.length - 54);
+                const hsvValues = hsvStr.split(',');
+                
+                if (hsvValues.length >= 162) {
+                    for (let i = 0; i < 54; i++) {
+                        const h = parseInt(hsvValues[i * 3]);
+                        const s = parseInt(hsvValues[i * 3 + 1]);
+                        const v = parseInt(hsvValues[i * 3 + 2]);
+                        
+                        hsvData[i] = {h, s, v};// 保存HSV值
+                        colorData[i] = hsvToRgb(h, s, v);
+                    }
+                    
+                    colorCodeArray = colorCodes.split('');
+                    initCubeLayout();
+                }
+            }
+            else if (event.data.startsWith('positions:')) {
+                const posStr = event.data.substring(10);
+                const regex = /\((\d+),(\d+)\)/g;
+                let match;
+                let index = 0;
+                
+                while ((match = regex.exec(posStr)) !== null && index < 6) {
+                    points[index].x = parseInt(match[1]);
+                    points[index].y = parseInt(match[2]);
+                    index++;
+                }
+                
+                drawOverlay();
+            } 
+            else if (event.data.startsWith('scramble_sequence:')) {
+                const sequence = event.data.split(':')[1];
+                document.getElementById('scrambleSequence').value = sequence;
+            }
+        }
+
+        // 添加复制数据到剪贴板的函数
+        function copyColorDataToClipboard() {
+            const order = ['U', 'R', 'F', 'D', 'L', 'B'];
+
+            // 准备带排序的数据
+            const data = [];
+            for (let i = 0; i < 54; i++) {
+                const color = hsvData[i];
+                const code = colorCodeArray[i] || '';
+                data.push({ i, color, code });
+            }
+
+            // 按指定顺序排序
+            data.sort((a, b) => {
+                // 获取代码在排序顺序中的位置
+                const aOrder = order.indexOf(a.code);
+                const bOrder = order.indexOf(b.code);
+                
+                // 优先按代码顺序排序
+                if (aOrder !== bOrder) {
+                    return aOrder - bOrder;
+                } 
+                // 相同代码时按原始索引排序
+                else {
+                    return a.i - b.i;
+                }
+            });
+
+            // 生成排序后的文本行
+            const lines = data.map(item => 
+                `${item.i}\t${item.color.h}\t${item.color.s}\t${item.color.v}\t${item.code}`
+            );
+            
+            const text = lines.join('\n');
+            
+            // 创建文本区域并复制内容
+            const textArea = document.createElement('textarea');
+            textArea.value = text;
+            textArea.style.position = 'fixed';
+            textArea.style.left = '-9999px';
+            textArea.style.top = '0';
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            
+            try {
+                const successful = document.execCommand('copy');
+                const msg = successful ? '成功' : '失败';
+                alert(`复制到剪贴板${msg}！`);
+            } catch (err) {
+                alert('复制失败: ' + err);
+            } finally {
+                document.body.removeChild(textArea);
+            }
+        }
+
+        // 创建上下文菜单函数
+        function createContextMenu(e) {
+            const existingMenu = document.getElementById('customContextMenu');
+            if (existingMenu) existingMenu.remove();
+            
+            const menu = document.createElement('div');
+            menu.id = 'customContextMenu';
+            menu.style.left = e.pageX + 'px';
+            menu.style.top = e.pageY + 'px';
+            
+            const menuItem = document.createElement('div');
+            menuItem.className = 'menu-item';
+            menuItem.textContent = '复制色块数据到剪贴板';
+            menuItem.addEventListener('click', function() {
+                copyColorDataToClipboard();
+                menu.remove();
+            });
+            menu.appendChild(menuItem);
+            
+            document.body.appendChild(menu);
+            
+            function closeMenu() {
+                menu.remove();
+                document.removeEventListener('click', closeMenu);
+            }
+            document.addEventListener('click', closeMenu);
+        }
+
+        function onLoad(event) {
+            document.getElementById('brightnessSlider').disabled = true;
+            resizeCanvas();
+            drawOverlay();
+            initEvents();
+            initCubeLayout();
+            
+            document.getElementById('enableMotors').addEventListener('click', function() {
+                if(isConnected) websocket.send('enable_all');
+            });
+            document.getElementById('disableMotors').addEventListener('click', function() {
+                if(isConnected) websocket.send('disable_all');
+            });
+            document.getElementById('goHome').addEventListener('click', function() {
+                if(isConnected) websocket.send('go_home');
+            });
+            document.getElementById('releaseCube').addEventListener('click', function() {
+                if(isConnected) websocket.send('release_cube');
+            });
+            document.getElementById('clampCube').addEventListener('click', function() {
+                if(isConnected) websocket.send('clamp_cube');
+            });
+            document.getElementById('testMotion').addEventListener('click', function() {
+                if(isConnected) {
+                    var seq = document.getElementById('motionSequence').value;
+                    websocket.send('motions:' + seq);
+                }
+            });
+            document.getElementById('scramble').addEventListener('click', function() {
+                if(isConnected) {
+                    var seq = document.getElementById('scrambleSequence').value;
+                    websocket.send('scramble:' + seq);
+                }
+            });
+            document.getElementById('save').addEventListener('click', function() {
+                if(isConnected) websocket.send('save');
+            });
+            document.getElementById('restore').addEventListener('click', function() {
+                if(isConnected) websocket.send('restore');
+            });
+            const cubeLayoutContainer = document.querySelector('.cube-layout-container');
+            cubeLayoutContainer.addEventListener('contextmenu', function(e) {
+                e.preventDefault();
+                createContextMenu(e);
+            });
+            initWebSocket();
+            initSlider();
+        }
+        
+        function initSlider() {
+            document.getElementById('brightnessSlider').addEventListener('input', function() {
+                if(isConnected) websocket.send('brightness:' + this.value);
+            });
+        }
+    </script>
+</body>
+
+</html>
